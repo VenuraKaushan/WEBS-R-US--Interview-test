@@ -63,8 +63,8 @@ const SelectionPage = ({ boxes, setBoxes }) => {
   };
 
   const calculateTotalPrice = (box) => {
-    const rate = 472.41; 
-    const deliveryCharge = 5; 
+    const rate = 472.41;
+    const deliveryCharge = 5;
 
     let volume;
 
@@ -80,9 +80,11 @@ const SelectionPage = ({ boxes, setBoxes }) => {
   };
 
   const calculateTotal = () => {
-    return boxes.reduce((total, box) => {
-      return total + parseFloat(calculateTotalPrice(box));
-    }, 0).toFixed(7); // Calculate and round the total price
+    return boxes
+      .reduce((total, box) => {
+        return total + parseFloat(calculateTotalPrice(box));
+      }, 0)
+      .toFixed(7); // Calculate and round the total price
   };
 
   const goToSummary = () => {
@@ -101,7 +103,7 @@ const SelectionPage = ({ boxes, setBoxes }) => {
           {boxes.length > 1 && (
             <button
               onClick={() => removeBox(index)}
-              className="absolute top-2 right-2 text-red-500 text-sm p-1 rounded-full"
+              className="absolute top-2 right-2 text-red-500 text-xs w-6 h-6 p-0 flex items-center justify-center border border-transparent rounded-full"
             >
               ❌
             </button>
@@ -181,9 +183,19 @@ const SelectionPage = ({ boxes, setBoxes }) => {
       </button>
       <button
         onClick={goToSummary}
-        disabled={!allBoxesHaveType}
+        disabled={
+          !allBoxesHaveType ||
+          boxes.some(
+            (box) =>
+              box.type === "Box C" && (!box.length || !box.width || !box.height)
+          )
+        } // Disable if any Box C has missing dimensions or if any box type is not selected
         className={`mt-4 ml-2 p-2 rounded ${
-          allBoxesHaveType
+          allBoxesHaveType &&
+          !boxes.some(
+            (box) =>
+              box.type === "Box C" && (!box.length || !box.width || !box.height)
+          )
             ? "bg-green-500 text-white"
             : "bg-gray-400 text-gray-700 cursor-not-allowed"
         }`}
@@ -193,6 +205,5 @@ const SelectionPage = ({ boxes, setBoxes }) => {
     </div>
   );
 };
-
 
 export default SelectionPage;
