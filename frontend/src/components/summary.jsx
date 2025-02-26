@@ -50,8 +50,8 @@ const SummaryPage = () => {
 
 // Helper function to calculate individual box price
 const calculateTotalPrice = (box) => {
-  const rate = 472.41; // Rate per cubic meter
-  const deliveryCharge = 5; // Flat delivery charge
+  const rate = 472.41; 
+  const deliveryCharge = 5; 
 
   let volume;
 
