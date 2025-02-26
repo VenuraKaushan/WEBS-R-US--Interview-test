@@ -23,11 +23,11 @@ const SelectionPage = ({ boxes, setBoxes }) => {
 
   const handleBoxChange = (index, field, value) => {
     const updatedBoxes = [...boxes];
-
+  
     if (field === "quantity") {
-      value = Math.max(1, parseInt(value) || 1);
+      value = Math.max(1, parseInt(value) || 1); // Ensure quantity is at least 1
     }
-
+  
     if (field === "type" && value !== "Box C") {
       const selectedBox = boxData.find((box) => box.name === value);
       if (selectedBox) {
@@ -42,11 +42,15 @@ const SelectionPage = ({ boxes, setBoxes }) => {
         updatedBoxes[index] = { ...updatedBoxes[index], type: value };
       }
     } else {
+      if (["length", "width", "height"].includes(field)) {
+        value = Math.max(1, parseInt(value) || 1); 
+      }
       updatedBoxes[index][field] = value;
     }
-
+  
     setBoxes(updatedBoxes);
   };
+  
 
   const addAnotherBox = () => {
     setBoxes([
