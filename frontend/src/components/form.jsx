@@ -69,14 +69,12 @@ const SelectionPage = ({ boxes, setBoxes }) => {
     let volume;
 
     if (box.type === "Box A") {
-      console.log(box)
       volume = (box.width * box.length * box.height) / 1000000; // Fixed dimensions for Box A
     } else if (box.type === "Box B") {
-      console.log(box)
 
       volume = (box.width * box.length * box.height) / 1000000; // Fixed dimensions for Box B
     } else if (box.type === "Box C") {
-      console.log(box)
+      console.log(box);
 
       volume = (box.length * box.width * box.height) / 1000000; // Custom dimensions for Box C
     }
@@ -116,13 +114,15 @@ const SelectionPage = ({ boxes, setBoxes }) => {
 
           <label className="block font-semibold">Select Box Type</label>
           <select
-            className="border p-2 w-full mt-1"
+            className="border p-2 w-full mt-1 bg-white text-gray-800 border-gray-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={box.type}
             onChange={(e) => handleBoxChange(index, "type", e.target.value)}
           >
-            <option value="">Select Box Type</option>
+            <option value="" className="text-gray-500">
+              Select Box Type
+            </option>
             {boxTypes.map((type) => (
-              <option key={type} value={type}>
+              <option key={type} value={type} className="text-black">
                 {type}
               </option>
             ))}
@@ -173,8 +173,6 @@ const SelectionPage = ({ boxes, setBoxes }) => {
             value={box.quantity}
             onChange={(e) => handleBoxChange(index, "quantity", e.target.value)}
           />
-
-          
         </div>
       ))}
 
