@@ -69,10 +69,15 @@ const SelectionPage = ({ boxes, setBoxes }) => {
     let volume;
 
     if (box.type === "Box A") {
-      volume = (42 * 42 * 60) / 1000000; // Fixed dimensions for Box A
+      console.log(box)
+      volume = (box.width * box.length * box.height) / 1000000; // Fixed dimensions for Box A
     } else if (box.type === "Box B") {
-      volume = (42 * 42 * 30) / 1000000; // Fixed dimensions for Box B
+      console.log(box)
+
+      volume = (box.width * box.length * box.height) / 1000000; // Fixed dimensions for Box B
     } else if (box.type === "Box C") {
+      console.log(box)
+
       volume = (box.length * box.width * box.height) / 1000000; // Custom dimensions for Box C
     }
 
@@ -169,9 +174,7 @@ const SelectionPage = ({ boxes, setBoxes }) => {
             onChange={(e) => handleBoxChange(index, "quantity", e.target.value)}
           />
 
-          {/* <div className="mt-2 font-semibold">
-            Total Price: ${calculateTotalPrice(box)}
-          </div> */}
+          
         </div>
       ))}
 
