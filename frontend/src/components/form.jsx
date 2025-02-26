@@ -1,28 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const SelectionPage = ({ boxes, setBoxes }) => {
   const navigate = useNavigate();
-
   const boxTypes = ["Box A", "Box B", "Box C"];
+  const [boxData, setBoxData] = useState([]);
+
+  useEffect(() => {
+    const fetchBoxData = async () => {
+      try {
+        const response = await fetch("http://localhost:6001/api/boxes");
+        const data = await response.json();
+        console.log(data);
+        setBoxData(data);
+      } catch (error) {
+        console.error("Error fetching box data", error);
+      }
+    };
+
+    fetchBoxData();
+  }, []);
 
   const handleBoxChange = (index, field, value) => {
     const updatedBoxes = [...boxes];
 
-    // Ensure quantity is at least 1
     if (field === "quantity") {
       value = Math.max(1, parseInt(value) || 1);
     }
 
-    // If the user selects a type other than Box C, reset dimensions
     if (field === "type" && value !== "Box C") {
-      updatedBoxes[index] = {
-        type: value,
-        quantity: 1,
-        length: "",
-        width: "",
-        height: "",
-      };
+      const selectedBox = boxData.find((box) => box.name === value);
+      if (selectedBox) {
+        updatedBoxes[index] = {
+          type: value,
+          quantity: 1,
+          length: selectedBox.length,
+          width: selectedBox.width,
+          height: selectedBox.height,
+        };
+      } else {
+        updatedBoxes[index] = { ...updatedBoxes[index], type: value };
+      }
     } else {
       updatedBoxes[index][field] = value;
     }
@@ -37,13 +55,58 @@ const SelectionPage = ({ boxes, setBoxes }) => {
     ]);
   };
 
+  const removeBox = (index) => {
+    if (boxes.length > 1) {
+      const updatedBoxes = boxes.filter((_, i) => i !== index);
+      setBoxes(updatedBoxes);
+    }
+  };
+
+  const calculateTotalPrice = (box) => {
+    const rate = 472.41; // Rate per cubic meter
+    const deliveryCharge = 5; // Flat delivery charge
+
+    let volume;
+
+    if (box.type === "Box A") {
+      volume = (42 * 42 * 60) / 1000000; // Fixed dimensions for Box A
+    } else if (box.type === "Box B") {
+      volume = (42 * 42 * 30) / 1000000; // Fixed dimensions for Box B
+    } else if (box.type === "Box C") {
+      volume = (box.length * box.width * box.height) / 1000000; // Custom dimensions for Box C
+    }
+
+    return (volume * box.quantity * rate + deliveryCharge).toFixed(7); // Return price with 7 decimal points
+  };
+
+  const calculateTotal = () => {
+    return boxes.reduce((total, box) => {
+      return total + parseFloat(calculateTotalPrice(box));
+    }, 0).toFixed(7); // Calculate and round the total price
+  };
+
+  const goToSummary = () => {
+    const totalPrice = calculateTotal(); // Calculate the total price for all boxes
+    navigate("/summary", { state: { boxes, totalPrice } });
+  };
+
+  const allBoxesHaveType = boxes.every((box) => box.type !== "");
+
   return (
     <div className="p-6">
       <h2 className="text-xl font-bold mb-4">Step 1: Select Boxes</h2>
 
       {boxes.map((box, index) => (
-        <div key={index} className="p-4 border rounded mt-4">
-          {/* Dropdown for selecting Box Type */}
+        <div key={index} className="p-4 border rounded mt-4 relative">
+          {boxes.length > 1 && (
+            <button
+              onClick={() => removeBox(index)}
+              className="absolute top-2 right-2 text-red-500 text-sm p-1 rounded-full"
+            >
+              ❌
+            </button>
+          )}
+
           <label className="block font-semibold">Select Box Type</label>
           <select
             className="border p-2 w-full mt-1"
@@ -58,7 +121,6 @@ const SelectionPage = ({ boxes, setBoxes }) => {
             ))}
           </select>
 
-          {/* Show dimension inputs only if Box C is selected */}
           {box.type === "Box C" && (
             <>
               <label className="block font-semibold mt-2">Length (cm)</label>
@@ -96,7 +158,6 @@ const SelectionPage = ({ boxes, setBoxes }) => {
             </>
           )}
 
-          {/* Quantity Input */}
           <label className="block font-semibold mt-2">Quantity</label>
           <input
             type="number"
@@ -105,10 +166,13 @@ const SelectionPage = ({ boxes, setBoxes }) => {
             value={box.quantity}
             onChange={(e) => handleBoxChange(index, "quantity", e.target.value)}
           />
+
+          {/* <div className="mt-2 font-semibold">
+            Total Price: ${calculateTotalPrice(box)}
+          </div> */}
         </div>
       ))}
 
-      {/* Buttons for Adding and Navigating */}
       <button
         onClick={addAnotherBox}
         className="mt-4 bg-blue-500 text-white p-2 rounded"
@@ -116,13 +180,19 @@ const SelectionPage = ({ boxes, setBoxes }) => {
         Add Another
       </button>
       <button
-        onClick={() => navigate("/summary")}
-        className="mt-4 ml-2 bg-green-500 text-white p-2 rounded"
+        onClick={goToSummary}
+        disabled={!allBoxesHaveType}
+        className={`mt-4 ml-2 p-2 rounded ${
+          allBoxesHaveType
+            ? "bg-green-500 text-white"
+            : "bg-gray-400 text-gray-700 cursor-not-allowed"
+        }`}
       >
         Next
       </button>
     </div>
   );
 };
+
 
 export default SelectionPage;

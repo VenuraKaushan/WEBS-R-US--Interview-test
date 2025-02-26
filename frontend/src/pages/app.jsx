@@ -1,19 +1,16 @@
-import React, { useState } from 'react';
-import SelectionPage from '../components/form';
-import Summary from '../components/sumary';
+// import { BrowserRouter } from "react-router-dom";
+// import { useState } from "react";
+// import allRoutes from "../routes";
 
-const App = () => {
-  const [boxes, setBoxes] = useState([
-    { type: "", length: "", width: "", height: "", quantity: 1 } // Initialize with one box
-  ]);
-  const [step, setStep] = useState(1);
+// const App = () => {
+//   const [boxes, setBoxes] = useState([]);
+//   const [step, setStep] = useState(1);
 
-  return (
-    <div className="container mx-auto p-4">
-      {step === 1 && <SelectionPage boxes={boxes} setBoxes={setBoxes} setStep={setStep} />}
-      {step === 2 && <Summary boxes={boxes} setStep={setStep} />}
-    </div>
-  );
-};
+//   return (
+//     <BrowserRouter>
+//       <allRoutes boxes={boxes} setBoxes={setBoxes} setStep={setStep} />
+//     </BrowserRouter>
+//   );
+// };
 
-export default App;
+// export default App;
